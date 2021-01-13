@@ -1,0 +1,14 @@
+beautifulsoup4
+black
+Flask-API
+Flask-SQLAlchemy
+gunicorn
+isort
+pip-tools
+psycopg2-binary
+PyJWT
+python-dotenv
+python-dateutil
+pytz
+requests
+sendgrid
