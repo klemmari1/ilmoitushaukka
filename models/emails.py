@@ -7,18 +7,20 @@ from models.posts import Post
 posts_identifier = db.Table(
     "posts_identifier",
     db.Column("post_id", db.Integer, db.ForeignKey("post.id")),
-    db.Column("email_id", db.String(120), db.ForeignKey("email.email")),
+    db.Column("email_id", db.Integer, db.ForeignKey("email.id")),
 )
 
 
 @dataclass
 class Email(db.Model):
+    id: Optional[int]
     email: str
     url: str
     search_query: str
     sent_posts: Optional[List[Post]]
 
-    email = db.Column(db.String(120), primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    email = db.Column(db.String(120))
     url = db.Column(db.String(500))
     search_query = db.Column(db.String(200))
     sent_posts = db.relationship("Post", secondary=posts_identifier)

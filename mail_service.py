@@ -49,7 +49,11 @@ def send_mail(hilights: Dict[str, List[Post]], request: Request = None) -> None:
 
 
 def subscribe_email(email_address: str, url: str, search_query: str) -> bool:
-    email = Email.query.get(email_address)
+    email = Email.query.filter(
+        Email.email == email_address,
+        Email.url == url,
+        Email.search_query == search_query,
+    ).one_or_none()
     if not email:
         email = Email(email=email_address, url=url, search_query=search_query)
         email.subscribe()
@@ -58,8 +62,8 @@ def subscribe_email(email_address: str, url: str, search_query: str) -> bool:
 
 
 def unsubscribe_email(email_address: str) -> bool:
-    email = Email.query.get(email_address)
-    if email:
+    emails = Email.query.filter(Email.email == email_address).all()
+    for email in emails:
         email.unsubscribe()
         return True
     return False
