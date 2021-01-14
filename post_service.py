@@ -61,7 +61,8 @@ def handle_bs_and_create_hilights(
         post_link = post_title_element.find_all("a")[1]
     else:
         post_link = post_title_element.find_all("a")[0]
-    post_url = post_link["href"]
+    post_url = post_link["href"].split("/")
+    post_url = "/".join(post_url[:-1])
     post_id = int(post_url.split(".")[-1].split("/")[0])
     post_title = post_link.text.lower()
     post_datetime = parse(post_bs.find("time", {"class": "u-dt"})["datetime"])
