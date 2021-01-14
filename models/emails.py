@@ -23,7 +23,9 @@ class Email(db.Model):
     email = db.Column(db.String(120))
     url = db.Column(db.String(500))
     search_query = db.Column(db.String(200))
-    sent_posts = db.relationship("Post", secondary=posts_identifier)
+    sent_posts = db.relationship(
+        "Post", secondary=posts_identifier, passive_deletes=True
+    )
 
     def __repr__(self):
         return "<Email %r>" % self.email

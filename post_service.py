@@ -10,7 +10,7 @@ from sqlalchemy import desc
 import settings
 from mail_service import get_emails, send_mail
 from models.db import db
-from models.emails import Email
+from models.emails import Email, posts_identifier
 from models.posts import Post
 
 
@@ -54,7 +54,6 @@ def add_hilight(post: Post, hilights: Dict[str, List[Post]], email: Email) -> No
 def handle_bs_and_create_hilights(
     hilights: Dict[str, List[Post]],
     post_bs: BeautifulSoup,
-    saved_posts: List[Post],
     email: Email,
 ) -> None:
     post_title_element = post_bs.find("div", {"class": "structItem-title"})
@@ -67,7 +66,11 @@ def handle_bs_and_create_hilights(
     post_title = post_link.text.lower()
     post_datetime = parse(post_bs.find("time", {"class": "u-dt"})["datetime"])
 
-    existing_post = next((x for x in saved_posts if x.id == post_id), None)
+    existing_post = Post.query.get(post_id)
+    if email.email in hilights:
+        existing_post = existing_post or next(
+            (x for x in hilights[email.email] if x.id == post_id), None
+        )
     if not existing_post:
         post = Post(
             id=post_id,
@@ -82,23 +85,22 @@ def handle_bs_and_create_hilights(
 
 
 def fetch_hilights_from_url(
-    email: Email, saved_posts: List[Post], hilights: Dict[str, List[Post]]
+    email: Email, hilights: Dict[str, List[Post]]
 ) -> List[Post]:
 
     soup = get_soup(email.url)
     posts = soup.findAll("div", {"class": "structItem"})
     for post_bs in posts:
-        handle_bs_and_create_hilights(hilights, post_bs, saved_posts, email)
+        handle_bs_and_create_hilights(hilights, post_bs, email)
     return hilights
 
 
 def fetch_posts(request: Request = None):
-    saved_posts = get_posts()
     hilights: Dict[str, List[Post]] = dict()
 
     for email in get_emails():
         try:
-            fetch_hilights_from_url(email, saved_posts, hilights)
+            fetch_hilights_from_url(email, hilights)
         except Exception as e:
             print(str(e))
 
@@ -108,8 +110,9 @@ def fetch_posts(request: Request = None):
 
 
 def delete_old_posts() -> None:
-    posts = get_posts()
-    # Save at most 50 posts (the amount that fits on the page).
-    for post in posts[50:]:
-        db.session.delete(post)
-    db.session.commit()
+    for url in db.session.query(Post.url).distinct():
+        # Save at most 50 posts (the amount that fits on the page).
+        posts = Post.query.filter(Post.url == url[0]).order_by(desc(Post.time)).all()
+        for post in posts[50:]:
+            db.session.delete(post)
+        db.session.commit()
