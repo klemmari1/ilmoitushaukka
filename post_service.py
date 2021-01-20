@@ -97,7 +97,7 @@ def fetch_hilights_from_url(
     return hilights
 
 
-def fetch_posts(request: Request = None):
+def fetch_posts():
     hilights: Dict[str, List[Post]] = dict()
 
     for email in get_emails():
@@ -108,7 +108,7 @@ def fetch_posts(request: Request = None):
 
     db.session.commit()
 
-    send_mail(hilights, request)
+    send_mail(hilights)
 
 
 def delete_old_posts() -> None:

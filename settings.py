@@ -7,6 +7,7 @@ if os.path.exists(".env"):
 
 BASE_URL = "https://bbs.io-tech.fi"
 
+
 HEADERS = {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Methods": "GET",
@@ -17,6 +18,8 @@ HEADERS = {
 
 
 # Load ENV variables
+HOST_NAME = os.getenv("HOST_NAME", "test")
+
 SECRET_KEY = os.getenv("SECRET_KEY", "test")
 
 FROM_EMAIL = os.getenv("FROM_EMAIL", "a@b.com")

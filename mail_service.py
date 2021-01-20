@@ -1,6 +1,5 @@
 from typing import Dict, List
 
-from flask import Request
 from sendgrid import Content, From, Mail, SendGridAPIClient, To
 
 import settings
@@ -12,16 +11,18 @@ def get_emails():
     return Email.query.all()
 
 
-def send_mail(hilights: Dict[str, List[Post]], request: Request = None) -> None:
+def send_mail(hilights: Dict[str, List[Post]]) -> None:
     if not hilights:
         return
 
     for email, hilights in hilights.items():
-        title_section = f'<h2><a href="{request.url_root if request else ""}">Ilmoitushaukka</a> sale alerts</h2>'
+        title_section = (
+            f'<h2><a href="t{settings.HOST_NAME}">Ilmoitushaukka</a> sale alerts</h2>'
+        )
         hilight_messages_section = list(
             f'<a href="{hilight.url}">{hilight.title}</a>' for hilight in hilights
         )
-        unsubscribe_section = f'<p style="font-size:12px"><a href="{request.url_root if request else ""}?unsubscribe=-email-">Unsubscribe</a> from sale alerts</p>'
+        unsubscribe_section = f'<p style="font-size:12px"><a href="{settings.HOST_NAME}?unsubscribe=-email-">Unsubscribe</a> from sale alerts</p>'
         message = f"{title_section}<br/>{'<br/><br/>'.join(hilight_messages_section)}<br/><br/><br/>{unsubscribe_section}"
 
         sg = SendGridAPIClient(api_key=settings.EMAIL_API_KEY)

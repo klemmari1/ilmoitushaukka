@@ -73,7 +73,7 @@ def posts_list():
 
 @app.route("/posts/fetch/", methods=["GET"])
 def posts_fetch():
-    fetch_posts(request)
+    fetch_posts()
     return {"status": "ok"}
 
 
