@@ -47,8 +47,9 @@ def add_hilight(post: Post, hilights: Dict[str, List[Post]], email: Email) -> No
         if all(query_string.strip() in post.title for query_string in query_strings):
             if not email.email in hilights:
                 hilights[email.email] = []
-            hilights[email.email].append(post)
-            email.sent_posts.append(post)
+            if post not in hilights[email.email]:
+                hilights[email.email].append(post)
+                email.sent_posts.append(post)
 
 
 def handle_bs_and_create_hilights(
