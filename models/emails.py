@@ -6,8 +6,8 @@ from models.posts import Post
 
 posts_identifier = db.Table(
     "posts_identifier",
-    db.Column("post_id", db.Integer, db.ForeignKey("post.id")),
-    db.Column("email_id", db.Integer, db.ForeignKey("email.id")),
+    db.Column("post_id", db.Integer, db.ForeignKey("post.id", ondelete='CASCADE'), nullable=True),
+    db.Column("email_id", db.Integer, db.ForeignKey("email.id", ondelete='CASCADE'), nullable=True),
 )
 
 
