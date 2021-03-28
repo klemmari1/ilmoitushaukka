@@ -6,8 +6,18 @@ from models.posts import Post
 
 posts_identifier = db.Table(
     "posts_identifier",
-    db.Column("post_id", db.Integer, db.ForeignKey("post.id", ondelete='CASCADE'), nullable=True),
-    db.Column("email_id", db.Integer, db.ForeignKey("email.id", ondelete='CASCADE'), nullable=True),
+    db.Column(
+        "post_id",
+        db.Integer,
+        db.ForeignKey("post.id", ondelete="CASCADE"),
+        nullable=True,
+    ),
+    db.Column(
+        "email_id",
+        db.Integer,
+        db.ForeignKey("email.id", ondelete="CASCADE"),
+        nullable=True,
+    ),
 )
 
 
@@ -24,7 +34,7 @@ class Email(db.Model):
     url = db.Column(db.String(500))
     search_query = db.Column(db.String(200))
     sent_posts = db.relationship(
-        "Post", secondary=posts_identifier, passive_deletes=True
+        "Post", secondary=posts_identifier, cascade="all, delete"
     )
 
     def __repr__(self):

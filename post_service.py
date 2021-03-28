@@ -4,13 +4,13 @@ from typing import Dict, List
 import requests
 from bs4 import BeautifulSoup
 from dateutil.parser import parse
-from flask import Request, jsonify
+from flask import jsonify
 from sqlalchemy import desc
 
 import settings
 from mail_service import get_emails, send_mail
 from models.db import db
-from models.emails import Email, posts_identifier
+from models.emails import Email
 from models.posts import Post
 
 
@@ -53,9 +53,7 @@ def add_hilight(post: Post, hilights: Dict[str, List[Post]], email: Email) -> No
 
 
 def handle_bs_and_create_hilights(
-    hilights: Dict[str, List[Post]],
-    post_bs: BeautifulSoup,
-    email: Email,
+    hilights: Dict[str, List[Post]], post_bs: BeautifulSoup, email: Email
 ) -> None:
     post_title_element = post_bs.find("div", {"class": "structItem-title"})
     if len(post_title_element.find_all("a")) == 2:

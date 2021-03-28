@@ -66,5 +66,6 @@ def unsubscribe_email(email_address: str) -> bool:
     emails = Email.query.filter(Email.email == email_address).all()
     for email in emails:
         email.unsubscribe()
-        return True
-    return False
+    if not emails:
+        return False
+    return True
